@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#ffe5ec" />
-  <meta name="description" content="A dreamy little love letter that says 'I love you' in 30 languages, with heart showers, cute sounds, and zero broken links." />
+  <meta name="description" content="A dreamy little love letter that says 'I love you' in 30 languages, with spoken pronunciations, heart showers, cute sounds, and zero broken links." />
   <title>Love, In Every Language ♡</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23ff8fab' d='M50 88C23 67 7 52 7 32 7 17 18 7 32 7c8 0 15 4 18 11 3-7 10-11 18-11 14 0 25 10 25 25 0 20-16 35-43 56Z'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -360,6 +360,14 @@
       20% { opacity: 0.9; }
       70% { opacity: 0.65; transform: translateY(-9px) rotate(16deg) scale(1); }
       100% { opacity: 0; transform: translateY(-17px) rotate(20deg) scale(0.92); }
+    }
+    .audio-toggle.is-nudging { animation: soundNudge 0.55s var(--ease-soft); }
+    @keyframes soundNudge {
+      0%, 100% { transform: translateX(0); }
+      18% { transform: translateX(-4px) scale(1.01); }
+      38% { transform: translateX(4px) scale(1.01); }
+      58% { transform: translateX(-2px); }
+      78% { transform: translateX(2px); }
     }
 
     /* ---------- Stage & mascot ---------- */
@@ -814,19 +822,41 @@
       width: 100%;
       text-align: center;
       transition:
-        opacity 0.2s ease,
-        transform 0.24s ease,
-        filter 0.2s ease;
+        opacity 0.16s ease,
+        transform 0.2s ease,
+        filter 0.16s ease;
+    }
+    .phrase-stage::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 46%;
+      width: min(74%, 430px);
+      height: 58%;
+      transform: translate(-50%, -50%) scale(0.72);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(255, 178, 201, 0.3) 0%, rgba(255, 210, 228, 0.14) 46%, transparent 72%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .phrase-stage.is-popping::before { animation: phraseBloom 0.95s ease-out both; }
+    @keyframes phraseBloom {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.66); }
+      22% { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(1.22); }
     }
     .phrase-stage.is-changing .phrase-inner {
       opacity: 0;
-      transform: translateY(-9px) scale(0.975);
-      filter: blur(5px);
+      transform: translateY(11px) scale(0.86) rotate(-0.7deg);
+      filter: blur(6px);
     }
-    .phrase-inner.arriving { animation: phraseArrive 0.48s var(--ease-soft) both; }
+    .phrase-inner.arriving { animation: phraseArrive 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.18) both; }
     @keyframes phraseArrive {
-      from { opacity: 0; transform: translateY(13px) scale(0.965); filter: blur(5px); }
-      to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+      0% { opacity: 0; transform: translateY(27px) scale(0.76) rotate(-2.4deg); filter: blur(8px); }
+      48% { opacity: 1; transform: translateY(-7px) scale(1.04) rotate(0.8deg); filter: blur(0); }
+      72% { opacity: 1; transform: translateY(3px) scale(0.992) rotate(-0.3deg); filter: blur(0); }
+      100% { opacity: 1; transform: translateY(0) scale(1) rotate(0); filter: blur(0); }
     }
     .phrase-slot {
       width: 100%;
@@ -944,6 +974,7 @@
       to { stroke-dashoffset: 0; }
     }
     .phonetic-pill {
+      position: relative;
       margin-top: 14px;
       display: inline-flex;
       align-items: center;
@@ -958,6 +989,48 @@
       font-size: 0.73rem;
       line-height: 1.2;
       box-shadow: 0 5px 13px -12px rgba(141, 77, 97, 0.4);
+      text-align: left;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.25s var(--ease-spring);
+    }
+    .phonetic-pill:hover {
+      background: rgba(255, 255, 255, 0.68);
+      border-color: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 8px 18px -14px rgba(141, 77, 97, 0.55);
+    }
+    .phonetic-pill:active { transform: scale(0.985); }
+    .phonetic-pill.is-speaking {
+      background: rgba(255, 255, 255, 0.74);
+      border-color: rgba(232, 111, 147, 0.38);
+      box-shadow: 0 0 0 3px rgba(255, 190, 207, 0.22), 0 8px 20px -14px rgba(141, 77, 97, 0.55);
+    }
+    .speak-icon {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+      color: var(--rose-deep);
+      margin-left: -1px;
+      transition: transform 0.25s var(--ease-spring);
+    }
+    .phonetic-pill:hover .speak-icon { transform: scale(1.08); }
+    .phonetic-pill.is-speaking .speak-icon { animation: voiceBob 0.7s ease-in-out infinite; }
+    .phonetic-pill.is-speaking .speak-wave { animation: voiceWave 0.7s ease-in-out infinite; }
+    .phonetic-pill.is-speaking .wave-two { animation-delay: 0.12s; }
+    .phonetic-pill.is-unavailable .speak-icon { opacity: 0.42; }
+    .phonetic-pill.is-muted .speak-icon { color: var(--muted); }
+    .phonetic-pill.is-muted .speak-wave { opacity: 0.28; }
+    @keyframes voiceBob {
+      0%, 100% { transform: scale(1); }
+      35% { transform: scale(1.14); }
+      65% { transform: scale(0.97); }
+    }
+    @keyframes voiceWave {
+      0%, 100% { opacity: 0.32; }
+      50% { opacity: 1; }
     }
     .phonetic-label {
       font-size: 0.53rem;
@@ -1170,7 +1243,13 @@
       color: var(--muted);
       letter-spacing: 0.025em;
       white-space: nowrap;
-      transition: opacity 0.2s ease;
+      transition: opacity 0.2s ease, color 0.2s ease;
+    }
+    .transport.is-listening .auto-every { color: var(--rose-deep); }
+    .transport.is-listening .auto-dot { animation: autoDotPulse 1.4s ease-in-out infinite; }
+    @keyframes autoDotPulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
     }
     .auto-dot { color: rgba(158, 116, 131, 0.5); font-size: 0.62rem; }
     .progress-track {
@@ -1718,6 +1797,203 @@
     .spark-particle svg { width: 100%; height: 100%; overflow: visible; }
     .body-locked { overflow: hidden; }
 
+    /* ---------- Floating phrase echoes ---------- */
+    .pop-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      overflow: hidden;
+      contain: layout style;
+    }
+    .phrase-echo {
+      position: absolute;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      max-width: calc(100vw - 56px);
+      padding: 7px 15px 8px;
+      border-radius: 999px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.93), rgba(255, 238, 243, 0.84));
+      border: 1px solid rgba(255, 255, 255, 0.96);
+      box-shadow:
+        0 14px 34px -18px rgba(141, 77, 97, 0.55),
+        0 1px 0 #fff inset;
+      color: var(--berry);
+      font-family: var(--font-hand);
+      font-size: 1.22rem;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: 0.005em;
+      white-space: normal;
+      text-align: center;
+      text-wrap: balance;
+      transform-origin: 50% 100%;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      will-change: transform, opacity, filter;
+      animation: phraseEchoFloat 2.15s cubic-bezier(0.2, 0.76, 0.3, 1) forwards;
+    }
+    .phrase-echo .echo-flag {
+      font-family: var(--font-ui);
+      font-size: 0.95rem;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+    .phrase-echo .echo-text { display: inline-block; }
+    @keyframes phraseEchoFloat {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -10%) scale(0.34) rotate(var(--echo-tilt, -6deg));
+        filter: blur(7px);
+      }
+      18% {
+        opacity: 1;
+        transform: translate(-50%, -78%) scale(1.06) rotate(2deg);
+        filter: blur(0);
+      }
+      36% {
+        opacity: 0.97;
+        transform: translate(calc(-50% + var(--echo-drift, 0px)), -132%) scale(1) rotate(-1.2deg);
+        filter: blur(0);
+      }
+      74% {
+        opacity: 0.76;
+        transform: translate(calc(-50% + var(--echo-drift, 0px)), -228%) scale(0.95) rotate(1.5deg);
+        filter: blur(0.4px);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--echo-drift, 0px)), -292%) scale(0.82) rotate(4deg);
+        filter: blur(3px);
+      }
+    }
+
+    /* ---------- Ambient camera cameo ---------- */
+    .cameo-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 14;
+      pointer-events: none;
+      overflow: hidden;
+      transition: opacity 0.28s ease;
+    }
+    body.body-locked .cameo-layer { opacity: 0; }
+    .cameo-camera {
+      position: absolute;
+      top: clamp(88px, 17vh, 210px);
+      right: 0;
+      width: clamp(96px, 9vw, 142px);
+      transform: translate3d(116%, 14px, 0) rotate(9deg);
+      opacity: 0;
+      transition:
+        transform 0.62s var(--ease-spring),
+        opacity 0.34s ease;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 18px 24px rgba(154, 85, 107, 0.24));
+    }
+    .cameo-camera.is-peeking {
+      transform: translate3d(-16px, 0, 0) rotate(-4deg);
+      opacity: 1;
+    }
+    .cameo-camera.is-leaving {
+      transform: translate3d(120%, -8px, 0) rotate(10deg);
+      opacity: 0;
+      transition:
+        transform 0.52s cubic-bezier(0.6, 0.04, 0.76, 0.22),
+        opacity 0.4s ease 0.08s;
+    }
+    .cameo-camera.is-peeking .cameo-svg { animation: cameoWiggle 2.8s ease-in-out both; }
+    @keyframes cameoWiggle {
+      0% { transform: rotate(-3deg); }
+      16% { transform: rotate(2.4deg); }
+      32% { transform: rotate(-1.6deg); }
+      55% { transform: rotate(1.2deg); }
+      78% { transform: rotate(-2.6deg); }
+      100% { transform: rotate(-3deg); }
+    }
+    .cameo-svg {
+      width: 100%;
+      height: auto;
+      overflow: visible;
+      transform-origin: 50% 82%;
+    }
+    .cameo-flash {
+      position: absolute;
+      top: 2%;
+      right: 4%;
+      width: 38%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(255, 249, 218, 0.75) 34%, rgba(255, 255, 255, 0) 70%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .cameo-camera.is-flashing .cameo-flash { animation: cameoFlash 0.55s ease-out both; }
+    .cameo-camera.is-flashing .cameo-bulb { animation: cameoBulb 0.5s ease-out both; }
+    @keyframes cameoBulb {
+      0%, 100% { fill: #ffe7a3; }
+      28% { fill: #ffffff; }
+    }
+    @keyframes cameoFlash {
+      0% { opacity: 0; transform: scale(0.25); }
+      22% { opacity: 1; transform: scale(1.32); }
+      100% { opacity: 0; transform: scale(2.15); }
+    }
+    .cameo-print {
+      position: absolute;
+      left: 14%;
+      bottom: 8%;
+      width: 66%;
+      padding: 4px 4px 12px;
+      border-radius: 5px;
+      background: linear-gradient(160deg, #fffdfb 0%, #fff2f5 100%);
+      border: 1px solid rgba(255, 255, 255, 0.98);
+      box-shadow:
+        0 12px 24px -12px rgba(122, 63, 83, 0.5),
+        0 1px 0 #fff inset;
+      opacity: 0;
+      transform-origin: 50% 100%;
+      pointer-events: none;
+    }
+    .cameo-camera.is-printing .cameo-print {
+      animation: cameoPrint 2s cubic-bezier(0.22, 0.72, 0.24, 1) both;
+    }
+    @keyframes cameoPrint {
+      0% { opacity: 0; transform: translate(6px, 26px) scale(0.22) rotate(-12deg); }
+      16% { opacity: 1; transform: translate(0, 2px) scale(0.99) rotate(3deg); }
+      40% { opacity: 0.98; transform: translate(-20px, -8px) scale(1) rotate(-2deg); }
+      76% { opacity: 0.86; transform: translate(-52px, -19px) scale(0.94) rotate(4deg); }
+      100% { opacity: 0; transform: translate(-80px, -27px) scale(0.8) rotate(7deg); }
+    }
+    .cameo-print-photo {
+      display: grid;
+      place-items: center;
+      height: 33px;
+      border-radius: 3px;
+      background:
+        radial-gradient(circle at 32% 24%, rgba(255, 255, 255, 0.72), transparent 45%),
+        linear-gradient(135deg, #ffc6d7 0%, #f7b8dc 52%, #e3c4f6 100%);
+      color: #fff;
+      font-family: var(--font-ui);
+      font-size: 1.18rem;
+      line-height: 1;
+      text-shadow: 0 2px 5px rgba(185, 80, 118, 0.25);
+    }
+    .cameo-print-caption {
+      display: block;
+      margin-top: 4px;
+      text-align: center;
+      font-family: var(--font-hand);
+      font-size: 0.62rem;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--berry);
+      letter-spacing: 0.01em;
+    }
+
     /* ---------- Entrance ---------- */
     .topbar { animation: topbarIn 0.7s 0.06s var(--ease-soft) both; }
     @keyframes topbarIn {
@@ -1754,6 +2030,7 @@
       .brand-sub { font-size: 0.98rem; }
       .audio-toggle { height: 46px; }
       .sound-disc { width: 36px; height: 36px; }
+      .cameo-camera { top: 74px; width: 104px; }
       .hero { padding-top: 90px; margin-bottom: 17px; }
       .mascot-wrap { width: 122px; height: 112px; }
       .mascot-button { width: 112px; height: 106px; }
@@ -1794,6 +2071,14 @@
       .sound-disc { width: 35px; height: 35px; }
       .sound-text { display: none; }
       .sound-note { right: 4px; }
+      .cameo-camera { top: 72px; width: 92px; }
+      .phrase-echo {
+        max-width: calc(100vw - 34px);
+        padding: 6px 12px 7px;
+        gap: 6px;
+        font-size: 1.08rem;
+      }
+      .phrase-echo .echo-flag { font-size: 0.84rem; }
       .stage { width: calc(100% - 22px); padding-top: 3px; }
       .hero { padding-top: 84px; margin-bottom: 14px; }
       .mascot-wrap { width: 110px; height: 102px; }
@@ -1898,6 +2183,9 @@
       .hero { margin-top: 9px; margin-bottom: 16px; }
       .page-foot { padding-bottom: 12px; }
     }
+    @media (max-height: 620px) and (min-width: 561px) {
+      .cameo-camera { top: 84px; width: 96px; }
+    }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after {
@@ -1907,11 +2195,18 @@
       }
       .phrase-inner { transition-duration: 0.01ms; }
       .love-card::after { display: none; }
+      .pop-layer, .cameo-layer { display: none; }
     }
     @media (hover: none) {
       .btn-send::before { display: none; }
       .mascot-button:hover .mascot-svg { transform: none; }
       .auto-toggle, .transport-btn, .dictionary-btn, .random-btn { position: relative; }
+      .phonetic-pill::after {
+        content: "";
+        position: absolute;
+        inset: -8px -4px;
+        border-radius: 999px;
+      }
       .auto-toggle::after {
         content: "";
         position: absolute;
@@ -1948,6 +2243,50 @@
   <div class="floating-sky" id="floatingSky" aria-hidden="true"></div>
   <div class="noise" aria-hidden="true"></div>
 
+  <div class="cameo-layer" id="cameoLayer" aria-hidden="true">
+    <div class="cameo-camera" id="cameoCamera">
+      <div class="cameo-print">
+        <span class="cameo-print-photo">♥</span>
+        <span class="cameo-print-caption">you + me</span>
+      </div>
+      <span class="cameo-flash"></span>
+      <svg class="cameo-svg" viewBox="0 0 160 132" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="cameoBodyGrad" x1="28" y1="34" x2="138" y2="124" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#FFD7E3"/>
+            <stop offset="0.5" stop-color="#FFADC6"/>
+            <stop offset="1" stop-color="#F486A9"/>
+          </linearGradient>
+          <radialGradient id="cameoLensGrad" cx="0.36" cy="0.3" r="0.86">
+            <stop stop-color="#9C5A73"/>
+            <stop offset="0.58" stop-color="#653247"/>
+            <stop offset="1" stop-color="#3E1F2B"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="80" cy="126" rx="45" ry="6" fill="#C1778D" opacity="0.16"/>
+        <path d="M50 40h15l7-11h21l7 11h12c8 0 14 6 14 14v51c0 9-6 15-15 15H44c-9 0-15-6-15-15V54c0-8 6-14 15-14Z" fill="url(#cameoBodyGrad)" stroke="#FFF7F9" stroke-width="2"/>
+        <rect x="58" y="27" width="33" height="14" rx="6" fill="#FFE6EE" stroke="#FFF7F9" stroke-width="2"/>
+        <rect x="104" y="31" width="16" height="7" rx="3.5" fill="#FFE9F0"/>
+        <path d="M41 38c-6-5-13-4-14 1-1 6 6 9 14 5" fill="#FF8FB0"/>
+        <path d="M41 38c6-5 13-4 14 1 1 6-6 9-14 5" fill="#FFA9C1"/>
+        <circle cx="41" cy="40" r="3.3" fill="#F26892"/>
+        <circle cx="126" cy="55" r="7.2" fill="#FFF3C8" stroke="#FFF9E3" stroke-width="2"/>
+        <circle class="cameo-bulb" cx="126" cy="55" r="4.2" fill="#FFE7A3"/>
+        <circle cx="75" cy="81" r="30.5" fill="#FFF8FA" stroke="#FFF2F6" stroke-width="3"/>
+        <circle cx="75" cy="81" r="22.5" fill="url(#cameoLensGrad)"/>
+        <circle cx="67" cy="72.5" r="5.3" fill="#FFFFFF" fill-opacity="0.58"/>
+        <circle cx="83.5" cy="90" r="2.4" fill="#FFD1DF" fill-opacity="0.8"/>
+        <circle cx="114.5" cy="76" r="2.1" fill="#713347"/>
+        <circle cx="125.5" cy="76" r="2.1" fill="#713347"/>
+        <path d="M116 83.5c2.4 3 6.6 3 9 0" stroke="#713347" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="111" cy="83" rx="4.2" ry="2.5" fill="#FF6E97" opacity="0.42"/>
+        <ellipse cx="129" cy="83" rx="4.2" ry="2.5" fill="#FF6E97" opacity="0.42"/>
+        <path d="M124.5 102.5c-4.5-3-7-5.1-7-7.8 0-2 1.6-3.4 3.4-3.4 1.1 0 2 .6 2.7 1.5.7-.9 1.6-1.5 2.7-1.5 1.8 0 3.4 1.4 3.4 3.4 0 2.7-2.5 4.8-7 7.8Z" fill="#FF789E" opacity="0.85"/>
+        <path d="M95 116c2.3-1.5 4.7-1.5 7 0" stroke="#FFE1EA" stroke-width="1.6" stroke-linecap="round" opacity="0.65"/>
+      </svg>
+    </div>
+  </div>
+
   <header class="topbar">
     <a class="brand" href="#" aria-label="Love, in every language — back to the top">
       <span class="brand-mark" aria-hidden="true">
@@ -1962,7 +2301,7 @@
     </a>
     <div class="top-actions">
       <span class="count-pill"><span class="tiny-heart">♥</span> <span id="languageCountTop">30 languages</span></span>
-      <button class="audio-toggle" id="audioToggle" type="button" aria-pressed="true" aria-label="Mute sound effects" title="Mute sound effects">
+      <button class="audio-toggle is-muted" id="audioToggle" type="button" aria-pressed="false" aria-label="Sound and spoken pronunciation" title="Turn on sound and spoken pronunciation">
         <span class="sound-disc" aria-hidden="true">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M4.5 9.2v5.6h3.2l4.1 3.4V5.8L7.7 9.2H4.5Z" fill="currentColor" stroke="none"/>
@@ -1973,8 +2312,8 @@
           <span class="sound-note">♪</span>
         </span>
         <span class="sound-text">
-          <span class="sound-label" id="soundLabel">sound on</span>
-          <span class="sound-sub" id="soundSub">tap to hush</span>
+          <span class="sound-label" id="soundLabel">sound off</span>
+          <span class="sound-sub" id="soundSub">tap to hear</span>
         </span>
       </button>
     </div>
@@ -2071,11 +2410,16 @@
               <path d="M4 10.5C30 3.5 58 12 83 7C108 2 132 10.5 160 6.5" />
               <path d="M132 11.5C139.5 9.7 146 9.1 153.5 10.4" opacity="0.55" />
             </svg>
-            <div class="phonetic-pill" aria-label="Pronunciation guide">
+            <button class="phonetic-pill is-muted" id="speakBtn" type="button" aria-label="Sound is off. Turn on sound to hear French" title="Turn on sound to hear it">
               <span class="phonetic-label">say it like</span>
               <span class="phonetic-divider" aria-hidden="true"></span>
               <span class="phonetic-value" id="phoneticValue">zhuh TEM</span>
-            </div>
+              <svg class="speak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4.5 9.2v5.6h3.2l4.1 3.4V5.8L7.7 9.2H4.5Z" fill="currentColor" stroke="none"/>
+                <path class="speak-wave" d="M15.1 9.1a4.2 4.2 0 0 1 0 5.8"/>
+                <path class="speak-wave wave-two" d="M17.7 6.6a7.7 7.7 0 0 1 0 10.8"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -2124,7 +2468,7 @@
                 <span class="auto-label">autoplay</span>
               </button>
               <span class="auto-dot" aria-hidden="true">·</span>
-              <span class="auto-every" id="autoEvery">every 3.5s</span>
+              <span class="auto-every" id="autoEvery">every 6s</span>
             </div>
             <div class="progress-track" id="progressTrack" aria-hidden="true">
               <span class="progress-fill" id="progressFill"></span>
@@ -2203,6 +2547,7 @@
   </div>
 
   <div class="particle-layer" id="particleLayer" aria-hidden="true"></div>
+  <div class="pop-layer" id="popLayer" aria-hidden="true"></div>
 
   <script>
     (() => {
@@ -2246,7 +2591,10 @@
         { language: "Swahili", nativeName: "Kiswahili", text: "Nakupenda", phonetic: "nah-koo-PEN-dah", flag: "🇰🇪", code: "sw", script: "latin" }
       ];
 
-      const AUTO_INTERVAL = 3500;
+      const AUTO_INTERVAL = 6000;
+      const AUTO_EVERY_LABEL = "every " + Math.round(AUTO_INTERVAL / 1000) + "s";
+      // A short hush after the voice finishes so phrases never tumble over each other.
+      const SPEECH_BREATH = 900;
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const SCRIPT_CLASS = {
         latin: "script-latin",
@@ -2284,6 +2632,7 @@
         languageNative: byId("languageNative"),
         phraseHeading: byId("phraseHeading"),
         phoneticValue: byId("phoneticValue"),
+        speakBtn: byId("speakBtn"),
         phraseStage: byId("phraseStage"),
         phraseInner: byId("phraseInner"),
         currentNumber: byId("currentNumber"),
@@ -2312,6 +2661,9 @@
         toastRegion: byId("toastRegion"),
         phraseLive: byId("phraseLive"),
         particleLayer: byId("particleLayer"),
+        popLayer: byId("popLayer"),
+        cameoLayer: byId("cameoLayer"),
+        cameoCamera: byId("cameoCamera"),
         mainStage: byId("mainStage"),
         drawerTitle: byId("drawerTitle")
       };
@@ -2335,20 +2687,24 @@
         toastTimer: 0,
         sendResetTimer: 0,
         copyResetTimer: 0,
-        clickBurstAt: 0
+        clickBurstAt: 0,
+        soundNudgeTimer: 0,
+        autoHold: false
       };
 
       function readSoundPreference() {
         try {
-          return localStorage.getItem("love-sound") !== "off";
+          // A fresh key keeps the new muted-by-default promise even for
+          // visitors who had sound on under the old default.
+          return localStorage.getItem("love-sound-v2") === "on";
         } catch (error) {
-          return true;
+          return false;
         }
       }
 
       function saveSoundPreference(isOn) {
         try {
-          localStorage.setItem("love-sound", isOn ? "on" : "off");
+          localStorage.setItem("love-sound-v2", isOn ? "on" : "off");
         } catch (error) {
           /* Private mode is fine — the toggle still works for this visit. */
         }
@@ -2590,6 +2946,259 @@
       })();
 
       /* ---------------------------------------------------------------
+         Spoken pronunciation — uses the device's own speech voices.
+         No files, no network, and it respects the sound toggle.
+      ---------------------------------------------------------------- */
+      const Speaker = (() => {
+        const synthesis = window.speechSynthesis;
+        const UtteranceCtor = window.SpeechSynthesisUtterance;
+        const supported = Boolean(
+          synthesis &&
+          typeof synthesis.speak === "function" &&
+          typeof UtteranceCtor === "function"
+        );
+
+        const LOCALES = {
+          fr: "fr-FR",
+          es: "es-ES",
+          it: "it-IT",
+          pt: "pt-BR",
+          de: "de-DE",
+          nl: "nl-NL",
+          sv: "sv-SE",
+          no: "nb-NO",
+          da: "da-DK",
+          fi: "fi-FI",
+          pl: "pl-PL",
+          el: "el-GR",
+          ru: "ru-RU",
+          uk: "uk-UA",
+          tr: "tr-TR",
+          hi: "hi-IN",
+          bn: "bn-BD",
+          ur: "ur-PK",
+          ar: "ar-SA",
+          fa: "fa-IR",
+          he: "he-IL",
+          ja: "ja-JP",
+          ko: "ko-KR",
+          "zh-hans": "zh-CN",
+          "zh-hant": "zh-HK",
+          vi: "vi-VN",
+          th: "th-TH",
+          id: "id-ID",
+          fil: "fil-PH",
+          sw: "sw-KE"
+        };
+        const BASE_ALIASES = {
+          fil: ["tl"],
+          he: ["iw"],
+          id: ["in"],
+          nb: ["no"],
+          no: ["nb"]
+        };
+
+        let voices = [];
+        let speaking = false;
+        let unlocked = false;
+        let activeToken = 0;
+        let watchdogTimer = 0;
+        let endedAt = 0;
+
+        function normalizeTag(value) {
+          return String(value || "").toLowerCase().replace(/_/g, "-");
+        }
+
+        function baseTag(value) {
+          return normalizeTag(value).split("-")[0];
+        }
+
+        function localeFor(lang) {
+          const key = String((lang && lang.code) || "").toLowerCase();
+          return LOCALES[key] || key || "en-US";
+        }
+
+        function refreshVoices() {
+          if (!supported) return;
+          try {
+            voices = Array.from(synthesis.getVoices() || []);
+          } catch (error) {
+            voices = [];
+          }
+        }
+
+        function voiceForLocale(locale) {
+          if (!voices.length) refreshVoices();
+          if (!voices.length) return null;
+
+          const target = normalizeTag(locale);
+          const targetBase = baseTag(target);
+          const exact = voices.find((voice) => normalizeTag(voice.lang) === target);
+          if (exact) return exact;
+
+          if (targetBase === "zh") {
+            // Keep Cantonese and Mandarin from borrowing each other's voices.
+            if (target.indexOf("hk") !== -1 || target.indexOf("mo") !== -1) {
+              return (
+                voices.find((voice) => baseTag(voice.lang) === "yue") ||
+                voices.find((voice) => /^zh-(hk|mo)(-|$)/.test(normalizeTag(voice.lang))) ||
+                null
+              );
+            }
+            return (
+              voices.find((voice) => /^zh-(cn|sg|hans)(-|$)/.test(normalizeTag(voice.lang))) ||
+              voices.find((voice) => baseTag(voice.lang) === "cmn") ||
+              voices.find((voice) => baseTag(voice.lang) === "zh") ||
+              null
+            );
+          }
+
+          const aliases = BASE_ALIASES[targetBase] || [];
+          return (
+            voices.find((voice) => {
+              const voiceBase = baseTag(voice.lang);
+              return voiceBase === targetBase || aliases.indexOf(voiceBase) !== -1;
+            }) || null
+          );
+        }
+
+        function syncButton() {
+          if (!els.speakBtn) return;
+          const lang = currentLanguage();
+          const languageName = lang ? lang.language : "this language";
+          const soundOff = !state.soundOn;
+          els.speakBtn.classList.toggle("is-speaking", speaking && !soundOff);
+          els.speakBtn.classList.toggle("is-unavailable", !supported);
+          els.speakBtn.classList.toggle("is-muted", soundOff);
+          if (!supported) {
+            els.speakBtn.setAttribute("aria-label", "Spoken pronunciation is not available in this browser");
+            els.speakBtn.title = "Spoken pronunciation is not supported here";
+            return;
+          }
+          if (soundOff) {
+            els.speakBtn.setAttribute("aria-label", "Sound is off. Turn on sound to hear " + languageName);
+            els.speakBtn.title = "Turn on sound to hear it";
+            return;
+          }
+          els.speakBtn.setAttribute(
+            "aria-label",
+            speaking
+              ? "Speaking aloud in " + languageName
+              : "Hear " + languageName + " spoken out loud"
+          );
+          els.speakBtn.title = "Hear it out loud";
+        }
+
+        function finish(token) {
+          if (token !== activeToken) return;
+          window.clearTimeout(watchdogTimer);
+          watchdogTimer = 0;
+          speaking = false;
+          endedAt = performance.now();
+          syncButton();
+        }
+
+        function cancel() {
+          activeToken += 1;
+          window.clearTimeout(watchdogTimer);
+          watchdogTimer = 0;
+          speaking = false;
+          endedAt = 0;
+          syncButton();
+          if (!supported) return;
+          try {
+            synthesis.cancel();
+          } catch (error) {
+            /* Some browsers can be dramatic about cancel(). */
+          }
+        }
+
+        function speak(lang, options) {
+          const config = options || {};
+          if (!supported || !state.soundOn || !lang || !lang.text) return false;
+
+          unlocked = true;
+          cancel();
+          const token = activeToken;
+          const utterance = new UtteranceCtor(lang.text);
+          const locale = localeFor(lang);
+          const voice = voiceForLocale(locale);
+
+          utterance.lang = voice && voice.lang ? voice.lang : locale;
+          if (voice) utterance.voice = voice;
+          utterance.rate = 0.72;
+          utterance.pitch = 1;
+          utterance.volume = 1;
+
+          utterance.onstart = () => {
+            if (token !== activeToken) return;
+            speaking = true;
+            syncButton();
+          };
+          utterance.onend = () => finish(token);
+          utterance.onerror = (event) => {
+            const reason = normalizeTag(event && event.error);
+            finish(token);
+            // Cancelling a previous phrase is not a pronunciation failure.
+            if (config.manual && reason !== "interrupted" && reason !== "canceled") {
+              showToast("No " + lang.language + " voice available on this device yet 💗", "💬");
+            }
+          };
+
+          speaking = true;
+          syncButton();
+          window.clearTimeout(watchdogTimer);
+          // A generous backstop for browsers that forget to fire onend.
+          // It must never be the thing that cuts a slow voice short.
+          watchdogTimer = window.setTimeout(
+            () => finish(token),
+            Math.min(30000, Math.max(9000, 3600 + lang.text.length * 220))
+          );
+
+          try {
+            if (synthesis.paused) synthesis.resume();
+            synthesis.speak(utterance);
+          } catch (error) {
+            finish(token);
+            if (config.manual) {
+              showToast("The voice is shy today — please try again 💗", "💬");
+            }
+            return false;
+          }
+          return true;
+        }
+
+        function unlock() {
+          unlocked = true;
+        }
+
+        function hasUnlocked() {
+          return unlocked;
+        }
+
+        if (supported) {
+          refreshVoices();
+          if (typeof synthesis.addEventListener === "function") {
+            synthesis.addEventListener("voiceschanged", refreshVoices);
+          } else {
+            synthesis.onvoiceschanged = refreshVoices;
+          }
+        }
+        syncButton();
+
+        return {
+          speak,
+          cancel,
+          unlock,
+          hasUnlocked,
+          isSpeaking: () => speaking,
+          lastEndedAt: () => endedAt,
+          supported,
+          syncButton
+        };
+      })();
+
+      /* ---------------------------------------------------------------
          Heart + sparkle particle shower.
       ---------------------------------------------------------------- */
       const HEART_SVG = '<svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 28.1C8.9 22.7 3 18.1 3 11.6 3 7.2 6.3 4.3 10.2 4.3c2.5 0 4.6 1.3 5.8 3.6 1.2-2.3 3.3-3.6 5.8-3.6 3.9 0 7.2 2.9 7.2 7.3 0 6.5-5.9 11.1-13 16.5Z" fill="currentColor"/><path d="M9.2 8.4c1.5-1.7 3.2-2.1 4.5-1.7-1.3.9-2.4 2-3 3.5-.9.1-1.8-.6-1.5-1.8Z" fill="#fff" fill-opacity=".65"/></svg>';
@@ -2705,8 +3314,154 @@
       }
 
       /* ---------------------------------------------------------------
+         Auto-carousel flourish — each new phrase releases a tiny
+         postcard echo that pops in, floats upward, and melts away.
+      ---------------------------------------------------------------- */
+      function spawnPhraseEcho(lang) {
+        if (prefersReducedMotion || !els.popLayer || !els.phraseStage) return;
+        const stage = els.phraseStage.getBoundingClientRect();
+        if (!stage.width || !stage.height) return;
+        const viewportWidth = Math.max(280, window.innerWidth);
+        const compact = viewportWidth < 420;
+        const side = compact ? 1 : state.index % 2 === 0 ? 1 : -1;
+        const offset = compact ? 0 : Math.min(stage.width * 0.22, 76) * side;
+        const centerX = stage.left + stage.width / 2 + offset;
+        const halfEcho = Math.min(140, viewportWidth * 0.24);
+        const x = Math.max(halfEcho, Math.min(viewportWidth - halfEcho, centerX));
+        const y = stage.top + stage.height * 0.55;
+
+        if (els.popLayer) els.popLayer.replaceChildren();
+        const echo = document.createElement("div");
+        echo.className = "phrase-echo";
+        echo.style.left = x.toFixed(1) + "px";
+        echo.style.top = y.toFixed(1) + "px";
+        echo.style.setProperty("--echo-drift", (side * (16 + Math.random() * 22)).toFixed(1) + "px");
+        echo.style.setProperty("--echo-tilt", (side * (5 + Math.random() * 4)).toFixed(1) + "deg");
+
+        const flag = document.createElement("span");
+        flag.className = "echo-flag";
+        flag.setAttribute("aria-hidden", "true");
+        flag.textContent = lang.flag;
+
+        const text = document.createElement("span");
+        text.className = "echo-text";
+        text.lang = lang.code;
+        text.dir = lang.rtl ? "rtl" : "ltr";
+        text.style.fontFamily = SCRIPT_NATIVE_FONT[lang.script] || "var(--font-hand)";
+        text.textContent = lang.text;
+
+        echo.append(flag, text);
+        els.popLayer.appendChild(echo);
+        window.setTimeout(() => echo.remove(), 2200);
+      }
+
+      /* ---------------------------------------------------------------
+         Ambient camera cameo — it peeks in, flashes, sends out a little
+         polaroid and a puff of hearts, then tucks itself away again.
+      ---------------------------------------------------------------- */
+      const Cameo = (() => {
+        const FIRST_DELAY_MIN = 5200;
+        const FIRST_DELAY_MAX = 8600;
+        const GAP_MIN = 16000;
+        const GAP_MAX = 27000;
+        let nextTimer = 0;
+        let active = false;
+        const phaseTimers = [];
+
+        function clearPhaseTimers() {
+          while (phaseTimers.length) window.clearTimeout(phaseTimers.pop());
+        }
+
+        function reset() {
+          active = false;
+          clearPhaseTimers();
+          window.clearTimeout(nextTimer);
+          nextTimer = 0;
+          if (els.cameoCamera) {
+            els.cameoCamera.classList.remove("is-peeking", "is-flashing", "is-printing", "is-leaving");
+          }
+        }
+
+        function schedule(delay) {
+          if (prefersReducedMotion) return;
+          window.clearTimeout(nextTimer);
+          nextTimer = window.setTimeout(peek, delay);
+        }
+
+        function releaseHearts(camera) {
+          const rect = camera.getBoundingClientRect();
+          spawnHeartBurst(
+            rect.left + rect.width * 0.38,
+            rect.top + rect.height * 0.54,
+            10,
+            { power: 0.78, sparkleRate: 0.38 }
+          );
+        }
+
+        function peek() {
+          if (document.hidden || state.drawerOpen) {
+            schedule(6000);
+            return;
+          }
+          const camera = els.cameoCamera;
+          if (!camera) return;
+
+          active = true;
+          camera.classList.remove("is-leaving", "is-flashing", "is-printing");
+          void camera.offsetWidth;
+          camera.classList.add("is-peeking");
+          Sound.pop(0.32);
+
+          phaseTimers.push(window.setTimeout(() => {
+            if (!active) return;
+            camera.classList.add("is-flashing", "is-printing");
+            Sound.sparkle();
+            releaseHearts(camera);
+          }, 620));
+
+          phaseTimers.push(window.setTimeout(() => {
+            if (!active) return;
+            camera.classList.remove("is-flashing");
+          }, 1250));
+
+          phaseTimers.push(window.setTimeout(() => {
+            if (!active) return;
+            camera.classList.remove("is-peeking");
+            camera.classList.add("is-leaving");
+          }, 3050));
+
+          phaseTimers.push(window.setTimeout(() => {
+            if (!active) return;
+            camera.classList.remove("is-leaving", "is-printing");
+            active = false;
+            schedule(GAP_MIN + Math.random() * (GAP_MAX - GAP_MIN));
+          }, 3700));
+        }
+
+        function start() {
+          schedule(FIRST_DELAY_MIN + Math.random() * (FIRST_DELAY_MAX - FIRST_DELAY_MIN));
+        }
+
+        function pause() {
+          reset();
+        }
+
+        function resume() {
+          if (prefersReducedMotion || active) return;
+          schedule(6000 + Math.random() * 5000);
+        }
+
+        return { start, pause, resume };
+      })();
+
+      /* ---------------------------------------------------------------
          Toast
       ---------------------------------------------------------------- */
+      function clearToast() {
+        window.clearTimeout(state.toastTimer);
+        if (els.toastRegion) els.toastRegion.replaceChildren();
+      }
+
       function showToast(message, icon) {
         const region = els.toastRegion;
         if (!region) return;
@@ -2762,6 +3517,7 @@
         els.dictionaryCount.textContent = String(LANGUAGES.length);
         els.drawerTitle.textContent = LANGUAGES.length + " ways to say it";
         syncDrawerActive();
+        Speaker.syncButton();
       }
 
       function announceLanguage(lang) {
@@ -2776,13 +3532,31 @@
         }
       }
 
+      function setAutoEveryText(text) {
+        if (els.autoEvery && els.autoEvery.textContent !== text) {
+          els.autoEvery.textContent = text;
+        }
+      }
+
       function syncAutoplayUI() {
+        state.autoHold = false;
         els.transport.classList.toggle("is-paused", !state.autoOn);
+        els.transport.classList.remove("is-listening");
         els.autoToggle.setAttribute("aria-pressed", String(state.autoOn));
         els.autoToggle.setAttribute("aria-label", state.autoOn ? "Pause automatic language changes" : "Resume automatic language changes");
         const label = els.autoToggle.querySelector(".auto-label");
         if (label) label.textContent = state.autoOn ? "autoplay" : "paused";
-        els.autoEvery.textContent = state.autoOn ? "every 3.5s" : "take your time";
+        setAutoEveryText(state.autoOn ? AUTO_EVERY_LABEL : "take your time");
+      }
+
+      function setAutoHold(isHolding) {
+        const next = Boolean(isHolding && state.autoOn);
+        if (state.autoHold === next) return;
+        state.autoHold = next;
+        els.transport.classList.toggle("is-listening", next);
+        if (state.autoOn) {
+          setAutoEveryText(next ? "one more breath…" : AUTO_EVERY_LABEL);
+        }
       }
 
       function setAutoplay(isOn) {
@@ -2811,6 +3585,8 @@
         state.isChanging = true;
 
         const lang = LANGUAGES[nextIndex];
+        // Stop the old phrase immediately; the new one starts once it is on screen.
+        Speaker.cancel();
         els.phraseStage.classList.add("is-changing");
         els.phraseStage.setAttribute("aria-busy", "true");
 
@@ -2825,12 +3601,35 @@
           state.isChanging = false;
 
           els.phraseInner.classList.remove("arriving");
+          els.phraseStage.classList.remove("is-popping");
           // Restart the little arrival animation without keeping the old state.
           void els.phraseInner.offsetWidth;
           els.phraseInner.classList.add("arriving");
+          els.phraseStage.classList.add("is-popping");
+          spawnPhraseEcho(lang);
+          if (!prefersReducedMotion) {
+            const stageRect = els.phraseStage.getBoundingClientRect();
+            spawnHeartBurst(
+              stageRect.left + stageRect.width / 2,
+              stageRect.top + stageRect.height * 0.3,
+              4,
+              { power: 0.44, sparkleRate: 0.85 }
+            );
+          }
           window.setTimeout(() => {
-            if (token === state.navToken) els.phraseInner.classList.remove("arriving");
-          }, 720);
+            if (token === state.navToken) {
+              els.phraseInner.classList.remove("arriving");
+              els.phraseStage.classList.remove("is-popping");
+            }
+          }, 980);
+
+          // Speak only after the phrase has visibly arrived, and only when the
+          // master sound switch is on. This keeps the picture and voice in step.
+          // If the reader just enabled sound during the transition, that voice
+          // is already speaking this phrase — don't restart it.
+          if (state.soundOn && config.sound !== false && !Speaker.isSpeaking() && (config.manual || Speaker.hasUnlocked())) {
+            Speaker.speak(lang);
+          }
 
           if (config.manual) announceLanguage(lang);
         }, transitionDelay);
@@ -2860,13 +3659,26 @@
         const delta = Math.min(100, Math.max(0, now - state.lastFrame));
         state.lastFrame = now;
         if (state.autoOn && !state.drawerOpen && !document.hidden) {
-          state.autoElapsed += delta;
+          state.autoElapsed = Math.min(AUTO_INTERVAL, state.autoElapsed + delta);
           setProgress(state.autoElapsed / AUTO_INTERVAL);
-          if (state.autoElapsed >= AUTO_INTERVAL) {
+
+          // Never step on a phrase that is still being spoken. Once the timer
+          // is up, wait for the voice and then leave a small, human breath.
+          const voiceBusy = Speaker.isSpeaking();
+          const breathLeft = !voiceBusy && Speaker.lastEndedAt() > 0
+            ? SPEECH_BREATH - (now - Speaker.lastEndedAt())
+            : 0;
+          const holdingForVoice = state.autoElapsed >= AUTO_INTERVAL && (voiceBusy || breathLeft > 0);
+          setAutoHold(holdingForVoice);
+
+          if (state.autoElapsed >= AUTO_INTERVAL && !voiceBusy && breathLeft <= 0) {
             state.autoElapsed = 0;
             setProgress(0);
+            setAutoHold(false);
             navigateTo(state.index + 1, { manual: false });
           }
+        } else if (state.autoHold) {
+          setAutoHold(false);
         }
         requestAnimationFrame(mainLoop);
       }
@@ -2874,14 +3686,21 @@
       function syncSoundUI() {
         els.audioToggle.classList.toggle("is-muted", !state.soundOn);
         els.audioToggle.setAttribute("aria-pressed", String(state.soundOn));
-        els.audioToggle.setAttribute("aria-label", state.soundOn ? "Sound effects on" : "Sound effects off");
-        els.audioToggle.title = state.soundOn ? "Mute sound effects" : "Turn on sound effects";
+        els.audioToggle.setAttribute("aria-label", "Sound and spoken pronunciation");
+        els.audioToggle.title = state.soundOn
+          ? "Mute sound and spoken pronunciation"
+          : "Turn on sound and spoken pronunciation";
         els.soundLabel.textContent = state.soundOn ? "sound on" : "sound off";
-        els.soundSub.textContent = state.soundOn ? "tap to hush" : "tap for magic";
+        els.soundSub.textContent = state.soundOn ? "voice + magic" : "tap to hear";
+        Speaker.syncButton();
       }
 
       function toggleSound() {
+        els.audioToggle.classList.remove("is-nudging");
+        window.clearTimeout(state.soundNudgeTimer);
+        clearToast();
         if (state.soundOn) {
+          Speaker.cancel();
           Sound.softOff();
           state.soundOn = false;
           saveSoundPreference(false);
@@ -2889,9 +3708,35 @@
         } else {
           state.soundOn = true;
           Sound.unlock();
+          Speaker.unlock();
           saveSoundPreference(true);
           syncSoundUI();
           Sound.sparkle();
+          Speaker.speak(currentLanguage(), { manual: true });
+        }
+      }
+
+      function handleSpeak() {
+        const lang = currentLanguage();
+        if (!Speaker.supported) {
+          showToast("This browser can't speak just yet — the phonetic guide is here for you 💗", "💬");
+          return;
+        }
+        // The sound button is the master switch. It is never flipped on behind
+        // the scenes; the reader gets a gentle nudge to turn it on instead.
+        if (!state.soundOn) {
+          showToast("Sound is off, love — tap the sound switch to hear it out loud 💗", "🔇");
+          els.audioToggle.classList.remove("is-nudging");
+          void els.audioToggle.offsetWidth;
+          els.audioToggle.classList.add("is-nudging");
+          window.clearTimeout(state.soundNudgeTimer);
+          state.soundNudgeTimer = window.setTimeout(() => {
+            els.audioToggle.classList.remove("is-nudging");
+          }, 700);
+          return;
+        }
+        if (Speaker.speak(lang, { manual: true })) {
+          burstFromElement(els.speakBtn, 6, { power: 0.55, sparkleRate: 0.64 });
         }
       }
 
@@ -3008,6 +3853,8 @@
       function openDrawer() {
         if (state.drawerOpen) return;
         window.clearTimeout(state.drawerCloseTimer);
+        Speaker.cancel();
+        Cameo.pause();
         const activeElement = document.activeElement;
         state.lastFocused =
           activeElement instanceof HTMLElement && activeElement !== document.body
@@ -3058,6 +3905,7 @@
           els.drawerLayer.hidden = true;
           els.drawerLayer.setAttribute("aria-hidden", "true");
           state.lastFocused = null;
+          Cameo.resume();
         }, 450);
       }
 
@@ -3235,8 +4083,7 @@
       /* ---------------------------------------------------------------
          Events & keyboard loveliness
       ---------------------------------------------------------------- */
-      function handleGlobalKeydown(event) {
-        if (state.drawerOpen) {
+      function handleGlobalKeydown(event) {        if (state.drawerOpen) {
           if (event.key === "Escape") {
             event.preventDefault();
             closeDrawer();
@@ -3280,10 +4127,17 @@
       function bindEvents() {
         // Audio can only wake up after a real gesture. The first tap or key
         // press quietly unlocks the synth without forcing a sound on anyone.
-        document.addEventListener("pointerdown", () => Sound.unlock(), { once: true, passive: true });
-        document.addEventListener("keydown", () => Sound.unlock(), { once: true });
+        document.addEventListener("pointerdown", () => {
+          Sound.unlock();
+          Speaker.unlock();
+        }, { once: true, passive: true });
+        document.addEventListener("keydown", () => {
+          Sound.unlock();
+          Speaker.unlock();
+        }, { once: true });
 
         els.audioToggle.addEventListener("click", toggleSound);
+        els.speakBtn.addEventListener("click", handleSpeak);
         els.prevBtn.addEventListener("click", () => {
           goPrevious();
           burstFromElement(els.prevBtn, 6, { power: 0.78, sparkleRate: 0.35 });
@@ -3325,6 +4179,12 @@
         document.addEventListener("click", handleBackgroundClick);
         document.addEventListener("visibilitychange", () => {
           state.lastFrame = performance.now();
+          if (document.hidden) {
+            Speaker.cancel();
+            Cameo.pause();
+          } else {
+            Cameo.resume();
+          }
         });
 
         let resizeTimer = 0;
@@ -3383,6 +4243,7 @@
         bindEvents();
         state.lastFrame = performance.now();
         requestAnimationFrame(mainLoop);
+        Cameo.start();
       }
 
       init();
